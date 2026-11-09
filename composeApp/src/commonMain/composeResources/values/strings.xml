@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="posts_title">Gönderiler</string>
+    <string name="posts_empty">Gösterilecek gönderi yok</string>
+    <string name="posts_load_error">Gönderiler yüklenemedi. İnternet bağlantınızı kontrol edin.</string>
+    <string name="post_delete_error">Gönderi silinemedi. Lütfen tekrar deneyin.</string>
+    <string name="action_retry">Tekrar dene</string>
+    <string name="cd_delete">Sil</string>
+</resources>

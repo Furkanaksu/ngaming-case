@@ -96,6 +96,10 @@ android {
     }
 }
 
+compose.resources {
+    packageOfResClass = "com.furkanaksu.ngamingcase.resources"
+}
+
 androidComponents {
     beforeVariants { variant ->
         variant.hostTests[com.android.build.api.variant.HostTestBuilder.UNIT_TEST_TYPE]?.enable = true
