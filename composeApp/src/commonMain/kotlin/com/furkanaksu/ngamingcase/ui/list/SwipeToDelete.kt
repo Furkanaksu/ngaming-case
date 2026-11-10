@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.furkanaksu.ngamingcase.resources.Res
 import com.furkanaksu.ngamingcase.resources.action_delete
 import com.furkanaksu.ngamingcase.resources.ic_delete
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
@@ -42,6 +45,7 @@ fun SwipeToDelete(
 ) {
     val actionWidthPx = with(LocalDensity.current) { DeleteActionWidth.toPx() }
     val state = remember { AnchoredDraggableState(initialValue = SwipeState.Closed) }
+    val scope = rememberCoroutineScope()
     SideEffect {
         state.updateAnchors(
             DraggableAnchors {
@@ -59,7 +63,10 @@ fun SwipeToDelete(
                     .width(DeleteActionWidth)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.error)
-                    .clickable(onClick = onDelete),
+                    .clickable {
+                        scope.launch { state.animateTo(SwipeState.Closed) }
+                        onDelete()
+                    },
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {

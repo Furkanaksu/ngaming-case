@@ -11,7 +11,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -22,11 +24,14 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,8 +40,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.furkanaksu.ngamingcase.data.model.Post
 import com.furkanaksu.ngamingcase.resources.Res
+import com.furkanaksu.ngamingcase.resources.action_cancel
+import com.furkanaksu.ngamingcase.resources.action_delete
 import com.furkanaksu.ngamingcase.resources.action_retry
 import com.furkanaksu.ngamingcase.resources.action_undo
+import com.furkanaksu.ngamingcase.resources.delete_confirm_message
+import com.furkanaksu.ngamingcase.resources.delete_confirm_title
 import com.furkanaksu.ngamingcase.resources.post_delete_error
 import com.furkanaksu.ngamingcase.resources.post_deleted
 import com.furkanaksu.ngamingcase.resources.posts_empty
@@ -56,6 +65,7 @@ fun PostListScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val listState = rememberLazyListState()
+    var pendingDelete by remember { mutableStateOf<Post?>(null) }
 
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
@@ -98,7 +108,7 @@ fun PostListScreen(
                     posts = uiState.posts,
                     listState = listState,
                     onPostClick = onPostClick,
-                    onDelete = viewModel::deletePost,
+                    onDelete = { pendingDelete = it },
                 )
 
                 uiState.isLoading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
@@ -113,6 +123,41 @@ fun PostListScreen(
             }
         }
     }
+
+    pendingDelete?.let { post ->
+        DeleteConfirmDialog(
+            onConfirm = {
+                pendingDelete = null
+                viewModel.deletePost(post)
+            },
+            onDismiss = { pendingDelete = null },
+        )
+    }
+}
+
+@Composable
+private fun DeleteConfirmDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(Res.string.delete_confirm_title)) },
+        text = { Text(stringResource(Res.string.delete_confirm_message)) },
+        confirmButton = {
+            TextButton(
+                onClick = onConfirm,
+                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+            ) {
+                Text(stringResource(Res.string.action_delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(Res.string.action_cancel))
+            }
+        },
+    )
 }
 
 @Composable
