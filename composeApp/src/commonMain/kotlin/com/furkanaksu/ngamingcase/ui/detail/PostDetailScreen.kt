@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -129,68 +128,70 @@ private fun PostEditForm(
         modifier = modifier
             .fillMaxSize()
             .imePadding()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .verticalScroll(rememberScrollState()),
     ) {
         AsyncImage(
             model = uiState.imageUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         )
 
-        OutlinedTextField(
-            value = uiState.title,
-            onValueChange = onTitleChange,
-            label = { Text(stringResource(Res.string.label_title)) },
-            isError = !uiState.isTitleValid,
-            supportingText = if (!uiState.isTitleValid) {
-                { Text(stringResource(Res.string.error_title_empty)) }
-            } else {
-                null
-            },
-            enabled = !uiState.isSaving,
-            maxLines = 3,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        OutlinedTextField(
-            value = uiState.body,
-            onValueChange = onBodyChange,
-            label = { Text(stringResource(Res.string.label_description)) },
-            isError = !uiState.isBodyValid,
-            supportingText = if (!uiState.isBodyValid) {
-                { Text(stringResource(Res.string.error_description_empty)) }
-            } else {
-                null
-            },
-            enabled = !uiState.isSaving,
-            minLines = 5,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        Button(
-            onClick = onSave,
-            enabled = uiState.canSave,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            if (uiState.isSaving) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    strokeWidth = 2.dp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                )
-            } else {
-                Text(stringResource(Res.string.action_save))
+            OutlinedTextField(
+                value = uiState.title,
+                onValueChange = onTitleChange,
+                label = { Text(stringResource(Res.string.label_title)) },
+                isError = !uiState.isTitleValid,
+                supportingText = if (!uiState.isTitleValid) {
+                    { Text(stringResource(Res.string.error_title_empty)) }
+                } else {
+                    null
+                },
+                enabled = !uiState.isSaving,
+                maxLines = 3,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            OutlinedTextField(
+                value = uiState.body,
+                onValueChange = onBodyChange,
+                label = { Text(stringResource(Res.string.label_description)) },
+                isError = !uiState.isBodyValid,
+                supportingText = if (!uiState.isBodyValid) {
+                    { Text(stringResource(Res.string.error_description_empty)) }
+                } else {
+                    null
+                },
+                enabled = !uiState.isSaving,
+                minLines = 5,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            Button(
+                onClick = onSave,
+                enabled = uiState.canSave,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+            ) {
+                if (uiState.isSaving) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                    )
+                } else {
+                    Text(stringResource(Res.string.action_save))
+                }
             }
         }
     }
