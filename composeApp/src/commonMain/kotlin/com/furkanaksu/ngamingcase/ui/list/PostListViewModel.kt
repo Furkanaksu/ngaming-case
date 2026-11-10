@@ -21,6 +21,7 @@ data class PostListUiState(
 )
 
 sealed interface PostListEvent {
+    data class PostDeleted(val post: Post, val index: Int) : PostListEvent
     data object DeleteFailed : PostListEvent
 }
 
@@ -56,9 +57,16 @@ class PostListViewModel(private val repository: PostRepository) : ViewModel() {
     }
 
     fun deletePost(post: Post) {
+        val index = repository.posts.value.indexOfFirst { it.id == post.id }
+        if (index == -1) return
         viewModelScope.launch {
             repository.deletePost(post.id)
+                .onSuccess { _events.send(PostListEvent.PostDeleted(post, index)) }
                 .onFailure { _events.send(PostListEvent.DeleteFailed) }
         }
+    }
+
+    fun undoDelete(post: Post, index: Int) {
+        repository.restorePost(post, index)
     }
 }
