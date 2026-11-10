@@ -8,4 +8,14 @@
     <string name="action_retry">Tekrar dene</string>
     <string name="action_delete">Sil</string>
     <string name="action_undo">Geri al</string>
+
+    <string name="detail_title">Gönderi Detayı</string>
+    <string name="detail_not_found">Gönderi bulunamadı</string>
+    <string name="detail_save_error">Değişiklikler kaydedilemedi. Lütfen tekrar deneyin.</string>
+    <string name="label_title">Başlık</string>
+    <string name="label_description">Açıklama</string>
+    <string name="error_title_empty">Başlık boş olamaz</string>
+    <string name="error_description_empty">Açıklama boş olamaz</string>
+    <string name="action_save">Kaydet</string>
+    <string name="cd_back">Geri</string>
 </resources>
